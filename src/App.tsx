@@ -42,7 +42,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<HomePage userRole={userRole} />} />
               <Route path="/search" element={<SearchPage />} />
-              <Route path="/university" element={<Navigate to="/search" replace />} />
+              <Route path="/university" element={<UniversityPage />} />
               <Route path="/university/:id" element={<UniversityPage />} />
               {userRole === 'manager' && <Route path="/admin" element={<AdminPage />} />}
               <Route path="*" element={<NotFoundPage />} />
