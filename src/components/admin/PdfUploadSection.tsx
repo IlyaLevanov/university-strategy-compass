@@ -89,27 +89,19 @@ const PdfUploadSection: React.FC = () => {
           <label className="block text-sm mb-2">Университет</label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <button
-                role="combobox"
-                aria-expanded={open}
-                className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {universitySearchQuery || "Выбор университета"}
-              </button>
+              <Input
+                placeholder="Выбор университета"
+                value={universitySearchQuery}
+                onChange={(e) => setUniversitySearchQuery(e.target.value)}
+                onClick={() => setOpen(true)}
+                className="w-full cursor-pointer"
+              />
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
               <Command>
                 <CommandList>
                   <CommandEmpty>Университетов не найдено</CommandEmpty>
                   <CommandGroup>
-                    <div className="px-3 py-2">
-                      <Input 
-                        placeholder="Поиск университета..." 
-                        value={universitySearchQuery}
-                        onChange={(e) => setUniversitySearchQuery(e.target.value)}
-                        className="border-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                      />
-                    </div>
                     {filteredUniversities.map((university) => (
                       <CommandItem
                         key={university.id}
