@@ -1,7 +1,21 @@
 
-import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Check, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from '@/components/ui/input';
 
 // Example data
 const universities = [
@@ -76,11 +90,83 @@ const accreditations = ['Все', 'Государственная', 'Частн�
 
 const SearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Region state
+  const [regionSearchQuery, setRegionSearchQuery] = useState('Все регионы');
   const [selectedRegion, setSelectedRegion] = useState('Все регионы');
+  const [openRegion, setOpenRegion] = useState(false);
+  const [filteredRegions, setFilteredRegions] = useState(regions);
+  
+  // Direction state
+  const [directionSearchQuery, setDirectionSearchQuery] = useState('Все направления');
   const [selectedDirection, setSelectedDirection] = useState('Все направления');
+  const [openDirection, setOpenDirection] = useState(false);
+  const [filteredDirections, setFilteredDirections] = useState(directions);
+  
+  // Accreditation state
+  const [accreditationSearchQuery, setAccreditationSearchQuery] = useState('Все');
   const [selectedAccreditation, setSelectedAccreditation] = useState('Все');
+  const [openAccreditation, setOpenAccreditation] = useState(false);
+  const [filteredAccreditations, setFilteredAccreditations] = useState(accreditations);
   
   const navigate = useNavigate();
+
+  // Filter regions based on search query
+  useEffect(() => {
+    if (regionSearchQuery.trim() === '') {
+      setFilteredRegions(regions);
+    } else {
+      const filtered = regions.filter(region => 
+        region.toLowerCase().includes(regionSearchQuery.toLowerCase())
+      );
+      setFilteredRegions(filtered);
+    }
+  }, [regionSearchQuery]);
+  
+  // Filter directions based on search query
+  useEffect(() => {
+    if (directionSearchQuery.trim() === '') {
+      setFilteredDirections(directions);
+    } else {
+      const filtered = directions.filter(direction => 
+        direction.toLowerCase().includes(directionSearchQuery.toLowerCase())
+      );
+      setFilteredDirections(filtered);
+    }
+  }, [directionSearchQuery]);
+  
+  // Filter accreditations based on search query
+  useEffect(() => {
+    if (accreditationSearchQuery.trim() === '') {
+      setFilteredAccreditations(accreditations);
+    } else {
+      const filtered = accreditations.filter(accreditation => 
+        accreditation.toLowerCase().includes(accreditationSearchQuery.toLowerCase())
+      );
+      setFilteredAccreditations(filtered);
+    }
+  }, [accreditationSearchQuery]);
+
+  // Handle region selection
+  const handleRegionSelect = (region: string) => {
+    setSelectedRegion(region);
+    setRegionSearchQuery(region);
+    setOpenRegion(false);
+  };
+  
+  // Handle direction selection
+  const handleDirectionSelect = (direction: string) => {
+    setSelectedDirection(direction);
+    setDirectionSearchQuery(direction);
+    setOpenDirection(false);
+  };
+  
+  // Handle accreditation selection
+  const handleAccreditationSelect = (accreditation: string) => {
+    setSelectedAccreditation(accreditation);
+    setAccreditationSearchQuery(accreditation);
+    setOpenAccreditation(false);
+  };
 
   // Filter universities based on search query and filters
   const filteredUniversities = universities.filter((university) => {
@@ -117,47 +203,122 @@ const SearchPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
             <label className="block text-sm mb-1">Регион</label>
-            <select
-              value={selectedRegion}
-              onChange={(e) => setSelectedRegion(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2"
-            >
-              {regions.map((region) => (
-                <option key={region} value={region}>
-                  {region}
-                </option>
-              ))}
-            </select>
+            <Popover open={openRegion} onOpenChange={setOpenRegion}>
+              <PopoverTrigger asChild>
+                <div className="relative flex items-center w-full">
+                  <Input
+                    type="text"
+                    placeholder="Выберите или начните вводить..."
+                    value={regionSearchQuery}
+                    onChange={(e) => setRegionSearchQuery(e.target.value)}
+                    className="w-full pr-8"
+                  />
+                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
+                <Command>
+                  <CommandList>
+                    <CommandEmpty>Регионов не найдено</CommandEmpty>
+                    <CommandGroup>
+                      {filteredRegions.map((region) => (
+                        <CommandItem
+                          key={region}
+                          value={region}
+                          onSelect={() => handleRegionSelect(region)}
+                          className="flex items-center justify-between"
+                        >
+                          <div>{region}</div>
+                          {selectedRegion === region && (
+                            <Check className="h-4 w-4 ml-2" />
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div>
             <label className="block text-sm mb-1">Направление</label>
-            <select
-              value={selectedDirection}
-              onChange={(e) => setSelectedDirection(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2"
-            >
-              {directions.map((direction) => (
-                <option key={direction} value={direction}>
-                  {direction}
-                </option>
-              ))}
-            </select>
+            <Popover open={openDirection} onOpenChange={setOpenDirection}>
+              <PopoverTrigger asChild>
+                <div className="relative flex items-center w-full">
+                  <Input
+                    type="text"
+                    placeholder="Выберите или начните вводить..."
+                    value={directionSearchQuery}
+                    onChange={(e) => setDirectionSearchQuery(e.target.value)}
+                    className="w-full pr-8"
+                  />
+                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
+                <Command>
+                  <CommandList>
+                    <CommandEmpty>Направлений не найдено</CommandEmpty>
+                    <CommandGroup>
+                      {filteredDirections.map((direction) => (
+                        <CommandItem
+                          key={direction}
+                          value={direction}
+                          onSelect={() => handleDirectionSelect(direction)}
+                          className="flex items-center justify-between"
+                        >
+                          <div>{direction}</div>
+                          {selectedDirection === direction && (
+                            <Check className="h-4 w-4 ml-2" />
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div>
             <label className="block text-sm mb-1">Аккредитация</label>
-            <select
-              value={selectedAccreditation}
-              onChange={(e) => setSelectedAccreditation(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2"
-            >
-              {accreditations.map((accreditation) => (
-                <option key={accreditation} value={accreditation}>
-                  {accreditation}
-                </option>
-              ))}
-            </select>
+            <Popover open={openAccreditation} onOpenChange={setOpenAccreditation}>
+              <PopoverTrigger asChild>
+                <div className="relative flex items-center w-full">
+                  <Input
+                    type="text"
+                    placeholder="Выберите или начните вводить..."
+                    value={accreditationSearchQuery}
+                    onChange={(e) => setAccreditationSearchQuery(e.target.value)}
+                    className="w-full pr-8"
+                  />
+                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+                </div>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
+                <Command>
+                  <CommandList>
+                    <CommandEmpty>Вариантов не найдено</CommandEmpty>
+                    <CommandGroup>
+                      {filteredAccreditations.map((accreditation) => (
+                        <CommandItem
+                          key={accreditation}
+                          value={accreditation}
+                          onSelect={() => handleAccreditationSelect(accreditation)}
+                          className="flex items-center justify-between"
+                        >
+                          <div>{accreditation}</div>
+                          {selectedAccreditation === accreditation && (
+                            <Check className="h-4 w-4 ml-2" />
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
         

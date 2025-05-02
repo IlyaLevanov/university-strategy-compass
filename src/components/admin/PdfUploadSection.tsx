@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Upload, Check } from 'lucide-react';
+import { Upload, Check, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Command,
@@ -89,16 +89,18 @@ const PdfUploadSection: React.FC = () => {
           <label className="block text-sm mb-2">Университет</label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Input
-                type="text"
-                placeholder="Выбор университета"
-                value={universitySearchQuery}
-                onChange={(e) => setUniversitySearchQuery(e.target.value)}
-                onClick={() => setOpen(true)}
-                className="w-full cursor-pointer"
-              />
+              <div className="relative flex items-center w-full">
+                <Input
+                  type="text"
+                  placeholder="Выберите или начните вводить..."
+                  value={universitySearchQuery}
+                  onChange={(e) => setUniversitySearchQuery(e.target.value)}
+                  className="w-full pr-8"
+                />
+                <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+              </div>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0 bg-background" align="start" sideOffset={5}>
+            <PopoverContent className="w-full p-0 bg-popover" align="start" sideOffset={5}>
               <Command>
                 <CommandList>
                   <CommandEmpty>Университетов не найдено</CommandEmpty>
