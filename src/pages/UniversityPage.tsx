@@ -46,7 +46,7 @@ const correlationData = [
 const UniversityPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   
-  const [chartType, setChartType] = React.useState<'scatter' | 'line'>('scatter');
+  const [chartType, setChartType] = React.useState<'bar' | 'line'>('bar');
   const [metricX, setMetricX] = React.useState('students');
   const [metricY, setMetricY] = React.useState('publications');
   
@@ -122,10 +122,10 @@ const UniversityPage: React.FC = () => {
           <div className="space-y-4">
             <div className="flex space-x-2">
               <button
-                className={`px-4 py-2 rounded-md ${chartType === 'scatter' ? 'bg-university-blue text-white' : 'bg-muted text-university-textSecondary'}`}
-                onClick={() => setChartType('scatter')}
+                className={`px-4 py-2 rounded-md ${chartType === 'bar' ? 'bg-university-blue text-white' : 'bg-muted text-university-textSecondary'}`}
+                onClick={() => setChartType('bar')}
               >
-                Точечный
+                Столбчатый
               </button>
               <button
                 className={`px-4 py-2 rounded-md ${chartType === 'line' ? 'bg-university-blue text-white' : 'bg-muted text-university-textSecondary'}`}
@@ -178,8 +178,8 @@ const UniversityPage: React.FC = () => {
         
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
-            {chartType === 'scatter' ? (
-              <LineChart
+            {chartType === 'bar' ? (
+              <BarChart
                 data={correlationData}
                 margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
               >
@@ -205,16 +205,8 @@ const UniversityPage: React.FC = () => {
                   }}
                 />
                 <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="y"
-                  name={metricOptions.find(m => m.value === metricY)?.label || ''}
-                  stroke="#2196F3"
-                  dot={{ stroke: '#2196F3', strokeWidth: 2, r: 5, fill: 'transparent' }}
-                  activeDot={{ r: 8 }}
-                  isAnimationActive={false}
-                />
-              </LineChart>
+                <Bar dataKey="y" name={metricOptions.find(m => m.value === metricY)?.label || ''} fill="#2196F3" />
+              </BarChart>
             ) : (
               <LineChart
                 data={correlationData}

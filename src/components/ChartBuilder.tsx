@@ -1,21 +1,21 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart, LineChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Calendar } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from '@/components/ui/input';
-import { Check } from 'lucide-react';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { universitiesData } from '../data/mockData';
 
 // Example data
@@ -72,7 +72,7 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
   const [filteredMetrics, setFilteredMetrics] = useState(metricOptions);
   
   // Filter universities for University A based on search query
-  React.useEffect(() => {
+  useEffect(() => {
     if (universityASearchQuery.trim() === '') {
       setFilteredUniversitiesA(universitiesData);
     } else {
@@ -84,7 +84,7 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
   }, [universityASearchQuery]);
   
   // Filter universities for University B based on search query
-  React.useEffect(() => {
+  useEffect(() => {
     if (universityBSearchQuery.trim() === '') {
       setFilteredUniversitiesB(universitiesData);
     } else {
@@ -96,7 +96,7 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
   }, [universityBSearchQuery]);
   
   // Filter metrics based on search query
-  React.useEffect(() => {
+  useEffect(() => {
     if (metricSearchQuery.trim() === '') {
       setFilteredMetrics(metricOptions);
     } else {
@@ -151,7 +151,7 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
 
   return (
     <div className="glass-card p-6 animate-fade-in">
-      {title ? <h2 className="text-xl font-semibold mb-4">Сравнение университетов</h2> : <h2 className="text-xl font-semibold mb-4">Сравнение университетов</h2>}
+      {title ? <h2 className="text-xl font-semibold mb-4">{title}</h2> : <h2 className="text-xl font-semibold mb-4">Сравнение университетов</h2>}
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="space-y-4">
@@ -174,16 +174,18 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <label className="block text-sm mb-1">Университет A</label>
             <Popover open={openUniversityA} onOpenChange={setOpenUniversityA}>
               <PopoverTrigger asChild>
-                <Input
-                  type="text"
-                  placeholder="Выберите университет A"
-                  value={universityASearchQuery}
-                  onChange={(e) => setUniversityASearchQuery(e.target.value)}
-                  onClick={() => setOpenUniversityA(true)}
-                  className="w-full cursor-pointer"
-                />
+                <div className="relative flex items-center w-full">
+                  <Input
+                    type="text"
+                    placeholder="Выберите или начните вводить..."
+                    value={universityASearchQuery}
+                    onChange={(e) => setUniversityASearchQuery(e.target.value)}
+                    className="w-full pr-8"
+                  />
+                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+                </div>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0 bg-background" align="start" sideOffset={5}>
+              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
                 <Command>
                   <CommandList>
                     <CommandEmpty>Университетов не найдено</CommandEmpty>
@@ -212,16 +214,18 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <label className="block text-sm mb-1">Университет B</label>
             <Popover open={openUniversityB} onOpenChange={setOpenUniversityB}>
               <PopoverTrigger asChild>
-                <Input
-                  type="text"
-                  placeholder="Выберите университет B"
-                  value={universityBSearchQuery}
-                  onChange={(e) => setUniversityBSearchQuery(e.target.value)}
-                  onClick={() => setOpenUniversityB(true)}
-                  className="w-full cursor-pointer"
-                />
+                <div className="relative flex items-center w-full">
+                  <Input
+                    type="text"
+                    placeholder="Выберите или начните вводить..."
+                    value={universityBSearchQuery}
+                    onChange={(e) => setUniversityBSearchQuery(e.target.value)}
+                    className="w-full pr-8"
+                  />
+                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+                </div>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0 bg-background" align="start" sideOffset={5}>
+              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
                 <Command>
                   <CommandList>
                     <CommandEmpty>Университетов не найдено</CommandEmpty>
@@ -252,16 +256,18 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <label className="block text-sm mb-1">Метрика</label>
             <Popover open={openMetric} onOpenChange={setOpenMetric}>
               <PopoverTrigger asChild>
-                <Input
-                  type="text"
-                  placeholder="Выберите метрику"
-                  value={metricSearchQuery}
-                  onChange={(e) => setMetricSearchQuery(e.target.value)}
-                  onClick={() => setOpenMetric(true)}
-                  className="w-full cursor-pointer"
-                />
+                <div className="relative flex items-center w-full">
+                  <Input
+                    type="text"
+                    placeholder="Выберите или начните вводить..."
+                    value={metricSearchQuery}
+                    onChange={(e) => setMetricSearchQuery(e.target.value)}
+                    className="w-full pr-8"
+                  />
+                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
+                </div>
               </PopoverTrigger>
-              <PopoverContent className="w-full p-0 bg-background" align="start" sideOffset={5}>
+              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
                 <Command>
                   <CommandList>
                     <CommandEmpty>Метрик не найдено</CommandEmpty>
@@ -291,31 +297,33 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-university-textSecondary mb-1">От</label>
-                <select
-                  value={startYear}
-                  onChange={(e) => setStartYear(e.target.value)}
-                  className="w-full bg-muted border border-border rounded-md px-3 py-2"
-                >
-                  {yearOptions.map((year) => (
-                    <option key={`start-${year.value}`} value={year.value}>
-                      {year.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={startYear} onValueChange={setStartYear}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите год" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={`start-${year.value}`} value={year.value}>
+                        {year.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="block text-xs text-university-textSecondary mb-1">До</label>
-                <select
-                  value={endYear}
-                  onChange={(e) => setEndYear(e.target.value)}
-                  className="w-full bg-muted border border-border rounded-md px-3 py-2"
-                >
-                  {yearOptions.map((year) => (
-                    <option key={`end-${year.value}`} value={year.value}>
-                      {year.label}
-                    </option>
-                  ))}
-                </select>
+                <Select value={endYear} onValueChange={setEndYear}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите год" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {yearOptions.map((year) => (
+                      <SelectItem key={`end-${year.value}`} value={year.value}>
+                        {year.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
