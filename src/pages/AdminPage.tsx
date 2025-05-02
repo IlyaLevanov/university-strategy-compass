@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Upload, Check, Search, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
@@ -11,11 +10,18 @@ import {
 } from "@/components/ui/select";
 import { Input } from '@/components/ui/input';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 // Example users data
 const usersData = [
@@ -49,6 +55,7 @@ const AdminPage: React.FC = () => {
   const [selectedUniversity, setSelectedUniversity] = useState('');
   const [universitySearchQuery, setUniversitySearchQuery] = useState('');
   const [filteredUniversities, setFilteredUniversities] = useState(universitiesData);
+  const [open, setOpen] = useState(false);
   const [documentTags, setDocumentTags] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   
@@ -111,27 +118,14 @@ const AdminPage: React.FC = () => {
     });
   };
   
-  // Handle university selection directly from input
-  const handleUniversityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUniversitySearchQuery(e.target.value);
-    
-    // If exact match, select it directly
-    const matchedUniversity = universitiesData.find(
-      uni => uni.name.toLowerCase() === e.target.value.toLowerCase()
-    );
-    
-    if (matchedUniversity) {
-      setSelectedUniversity(matchedUniversity.id.toString());
-    }
-  };
-  
-  // Handle university selection from dropdown
+  // Handle university selection
   const handleUniversitySelect = (universityId: string) => {
     setSelectedUniversity(universityId);
     const selected = universitiesData.find(uni => uni.id.toString() === universityId);
     if (selected) {
       setUniversitySearchQuery(selected.name);
     }
+    setOpen(false);
   };
   
   // Handle PDF file selection
@@ -240,45 +234,45 @@ const AdminPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm mb-2">Университет</label>
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Поиск или выбор университета"
-                value={universitySearchQuery}
-                onChange={handleUniversityInputChange}
-                className="w-full pr-10"
-              />
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className="absolute right-0 top-0 h-full px-3 flex items-center"
-                    type="button"
-                  >
-                    <Search size={16} className="text-muted-foreground" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-[300px] max-h-[300px] overflow-y-auto">
-                  {filteredUniversities.length > 0 ? (
-                    filteredUniversities.map((university) => (
-                      <DropdownMenuItem 
-                        key={university.id}
-                        onClick={() => handleUniversitySelect(university.id.toString())}
-                        className="flex items-center justify-between"
-                      >
-                        {university.name}
-                        {selectedUniversity === university.id.toString() && (
-                          <Check className="h-4 w-4 ml-2" />
-                        )}
-                      </DropdownMenuItem>
-                    ))
-                  ) : (
-                    <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                      Ничего не найдено
-                    </div>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  role="combobox"
+                  aria-expanded={open}
+                  className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {universitySearchQuery || "Поиск или выбор университета"}
+                  <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                  <CommandInput 
+                    placeholder="Поиск университета..." 
+                    value={universitySearchQuery}
+                    onValueChange={setUniversitySearchQuery}
+                  />
+                  <CommandList>
+                    <CommandEmpty>Университетов не найдено</CommandEmpty>
+                    <CommandGroup>
+                      {filteredUniversities.map((university) => (
+                        <CommandItem
+                          key={university.id}
+                          value={university.name}
+                          onSelect={() => handleUniversitySelect(university.id.toString())}
+                          className="flex items-center justify-between"
+                        >
+                          <div>{university.name}</div>
+                          {selectedUniversity === university.id.toString() && (
+                            <Check className="h-4 w-4 ml-2" />
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div>
@@ -288,7 +282,7 @@ const AdminPage: React.FC = () => {
               placeholder="стратегия, отчет, план"
               value={documentTags}
               onChange={(e) => setDocumentTags(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2"
+              className="w-full bg-muted border border-input rounded-md px-3 py-2"
             />
           </div>
         </div>
