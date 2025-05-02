@@ -1,51 +1,22 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { Upload, Check, ChevronDown } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { SearchableDropdown } from "@/components/ui/searchable-dropdown";
 import { universitiesData } from '../../data/mockData';
+
+// Convert universities array to option objects
+const universityOptions = universitiesData.map(university => ({ 
+  value: university.id.toString(), 
+  label: university.name 
+}));
 
 const PdfUploadSection: React.FC = () => {
   const [selectedUniversity, setSelectedUniversity] = useState('');
   const [universitySearchQuery, setUniversitySearchQuery] = useState('');
-  const [filteredUniversities, setFilteredUniversities] = useState(universitiesData);
-  const [open, setOpen] = useState(false);
   const [documentTags, setDocumentTags] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  
-  // Filter universities based on search query
-  useEffect(() => {
-    if (universitySearchQuery.trim() === '') {
-      setFilteredUniversities(universitiesData);
-    } else {
-      const filtered = universitiesData.filter(university => 
-        university.name.toLowerCase().includes(universitySearchQuery.toLowerCase())
-      );
-      setFilteredUniversities(filtered);
-    }
-  }, [universitySearchQuery]);
-  
-  // Handle university selection
-  const handleUniversitySelect = (universityId: string) => {
-    setSelectedUniversity(universityId);
-    const selected = universitiesData.find(uni => uni.id.toString() === universityId);
-    if (selected) {
-      setUniversitySearchQuery(selected.name);
-    }
-    setOpen(false);
-  };
   
   // Handle PDF file selection
   const handlePdfSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,53 +58,14 @@ const PdfUploadSection: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm mb-2">Университет</label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <div 
-                className="relative flex items-center w-full cursor-pointer"
-                onClick={() => !open && setOpen(true)}
-              >
-                <Input
-                  type="text"
-                  placeholder="Выберите или начните вводить..."
-                  value={universitySearchQuery}
-                  onChange={(e) => {
-                    setUniversitySearchQuery(e.target.value);
-                    !open && setOpen(true);
-                  }}
-                  className="w-full pr-8"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      setOpen(false);
-                    }
-                  }}
-                />
-                <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
-              </div>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0 bg-popover" align="start" sideOffset={5}>
-              <Command>
-                <CommandList>
-                  <CommandEmpty>Университетов не найдено</CommandEmpty>
-                  <CommandGroup>
-                    {filteredUniversities.map((university) => (
-                      <CommandItem
-                        key={university.id}
-                        value={university.name}
-                        onSelect={() => handleUniversitySelect(university.id.toString())}
-                        className="flex items-center justify-between"
-                      >
-                        <div>{university.name}</div>
-                        {selectedUniversity === university.id.toString() && (
-                          <Check className="h-4 w-4 ml-2" />
-                        )}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <SearchableDropdown
+            options={universityOptions}
+            value={selectedUniversity}
+            onValueChange={setSelectedUniversity}
+            searchQuery={universitySearchQuery}
+            onSearchQueryChange={setUniversitySearchQuery}
+            emptyMessage="Университетов не найдено"
+          />
         </div>
         
         <div>

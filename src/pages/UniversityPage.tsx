@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Check, ChevronDown } from 'lucide-react';
 import SupersetDashboard from '../components/SupersetDashboard';
 import DocumentCarousel from '../components/DocumentCarousel';
 import { BarChart, LineChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { SearchableDropdown } from "@/components/ui/searchable-dropdown";
 import { Input } from '@/components/ui/input';
 
 // Example university data
@@ -63,58 +51,10 @@ const UniversityPage: React.FC = () => {
   // Metric X state
   const [metricXSearchQuery, setMetricXSearchQuery] = useState('');
   const [metricX, setMetricX] = useState('');
-  const [openMetricX, setOpenMetricX] = useState(false);
-  const [filteredMetricsX, setFilteredMetricsX] = useState(metricOptions);
   
   // Metric Y state
   const [metricYSearchQuery, setMetricYSearchQuery] = useState('');
   const [metricY, setMetricY] = useState('');
-  const [openMetricY, setOpenMetricY] = useState(false);
-  const [filteredMetricsY, setFilteredMetricsY] = useState(metricOptions);
-  
-  // Filter metrics X based on search query
-  useEffect(() => {
-    if (metricXSearchQuery.trim() === '') {
-      setFilteredMetricsX(metricOptions);
-    } else {
-      const filtered = metricOptions.filter(metric => 
-        metric.label.toLowerCase().includes(metricXSearchQuery.toLowerCase())
-      );
-      setFilteredMetricsX(filtered);
-    }
-  }, [metricXSearchQuery]);
-  
-  // Filter metrics Y based on search query
-  useEffect(() => {
-    if (metricYSearchQuery.trim() === '') {
-      setFilteredMetricsY(metricOptions);
-    } else {
-      const filtered = metricOptions.filter(metric => 
-        metric.label.toLowerCase().includes(metricYSearchQuery.toLowerCase())
-      );
-      setFilteredMetricsY(filtered);
-    }
-  }, [metricYSearchQuery]);
-  
-  // Handle metric X selection
-  const handleMetricXSelect = (metricValue: string) => {
-    setMetricX(metricValue);
-    const selected = metricOptions.find(metric => metric.value === metricValue);
-    if (selected) {
-      setMetricXSearchQuery(selected.label);
-    }
-    setOpenMetricX(false);
-  };
-  
-  // Handle metric Y selection
-  const handleMetricYSelect = (metricValue: string) => {
-    setMetricY(metricValue);
-    const selected = metricOptions.find(metric => metric.value === metricValue);
-    if (selected) {
-      setMetricYSearchQuery(selected.label);
-    }
-    setOpenMetricY(false);
-  };
   
   // In a real application, this would fetch university data based on the ID
   // For this prototype, we'll just use the example data
@@ -203,106 +143,28 @@ const UniversityPage: React.FC = () => {
             
             <div>
               <label className="block text-sm mb-1">Метрика X</label>
-              <Popover open={openMetricX} onOpenChange={setOpenMetricX}>
-                <PopoverTrigger asChild>
-                  <div 
-                    className="relative flex items-center w-full cursor-pointer"
-                    onClick={() => !openMetricX && setOpenMetricX(true)}
-                  >
-                    <Input
-                      type="text"
-                      placeholder="Выберите или начните вводить..."
-                      value={metricXSearchQuery}
-                      onChange={(e) => {
-                        setMetricXSearchQuery(e.target.value);
-                        !openMetricX && setOpenMetricX(true);
-                      }}
-                      className="w-full pr-8"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setOpenMetricX(false);
-                        }
-                      }}
-                    />
-                    <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
-                  <Command>
-                    <CommandList>
-                      <CommandEmpty>Метрик не найдено</CommandEmpty>
-                      <CommandGroup>
-                        {filteredMetricsX.map((metric) => (
-                          <CommandItem
-                            key={`x-${metric.value}`}
-                            value={metric.label}
-                            onSelect={() => handleMetricXSelect(metric.value)}
-                            className="flex items-center justify-between"
-                          >
-                            <div>{metric.label}</div>
-                            {metricX === metric.value && (
-                              <Check className="h-4 w-4 ml-2" />
-                            )}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <SearchableDropdown
+                options={metricOptions}
+                value={metricX}
+                onValueChange={setMetricX}
+                searchQuery={metricXSearchQuery}
+                onSearchQueryChange={setMetricXSearchQuery}
+                emptyMessage="Метрик не найдено"
+              />
             </div>
           </div>
           
           <div className="space-y-4">
             <div>
               <label className="block text-sm mb-1">Метрика Y</label>
-              <Popover open={openMetricY} onOpenChange={setOpenMetricY}>
-                <PopoverTrigger asChild>
-                  <div 
-                    className="relative flex items-center w-full cursor-pointer"
-                    onClick={() => !openMetricY && setOpenMetricY(true)}
-                  >
-                    <Input
-                      type="text"
-                      placeholder="Выберите или начните вводить..."
-                      value={metricYSearchQuery}
-                      onChange={(e) => {
-                        setMetricYSearchQuery(e.target.value);
-                        !openMetricY && setOpenMetricY(true);
-                      }}
-                      className="w-full pr-8"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setOpenMetricY(false);
-                        }
-                      }}
-                    />
-                    <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
-                  </div>
-                </PopoverTrigger>
-                <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
-                  <Command>
-                    <CommandList>
-                      <CommandEmpty>Метрик не найдено</CommandEmpty>
-                      <CommandGroup>
-                        {filteredMetricsY.map((metric) => (
-                          <CommandItem
-                            key={`y-${metric.value}`}
-                            value={metric.label}
-                            onSelect={() => handleMetricYSelect(metric.value)}
-                            className="flex items-center justify-between"
-                          >
-                            <div>{metric.label}</div>
-                            {metricY === metric.value && (
-                              <Check className="h-4 w-4 ml-2" />
-                            )}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
+              <SearchableDropdown
+                options={metricOptions}
+                value={metricY}
+                onValueChange={setMetricY}
+                searchQuery={metricYSearchQuery}
+                onSearchQueryChange={setMetricYSearchQuery}
+                emptyMessage="Метрик не найдено"
+              />
             </div>
             
             <button 

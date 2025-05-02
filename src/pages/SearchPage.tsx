@@ -1,19 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Check, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { SearchableDropdown } from "@/components/ui/searchable-dropdown";
 import { Input } from '@/components/ui/input';
 
 // Example data
@@ -87,85 +75,27 @@ const regions = ['Все регионы', 'Центральный', 'Север�
 const directions = ['Все направления', 'Классический', 'Технический', 'Экономический', 'Медицинский', 'Гуманитарный'];
 const accreditations = ['Все', 'Государственная', 'Частная'];
 
+// Convert array strings to option objects
+const regionOptions = regions.map(region => ({ value: region, label: region }));
+const directionOptions = directions.map(direction => ({ value: direction, label: direction }));
+const accreditationOptions = accreditations.map(accreditation => ({ value: accreditation, label: accreditation }));
+
 const SearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Region state
   const [regionSearchQuery, setRegionSearchQuery] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
-  const [openRegion, setOpenRegion] = useState(false);
-  const [filteredRegions, setFilteredRegions] = useState(regions);
   
   // Direction state
   const [directionSearchQuery, setDirectionSearchQuery] = useState('');
   const [selectedDirection, setSelectedDirection] = useState('');
-  const [openDirection, setOpenDirection] = useState(false);
-  const [filteredDirections, setFilteredDirections] = useState(directions);
   
   // Accreditation state
   const [accreditationSearchQuery, setAccreditationSearchQuery] = useState('');
   const [selectedAccreditation, setSelectedAccreditation] = useState('');
-  const [openAccreditation, setOpenAccreditation] = useState(false);
-  const [filteredAccreditations, setFilteredAccreditations] = useState(accreditations);
   
   const navigate = useNavigate();
-
-  // Filter regions based on search query
-  useEffect(() => {
-    if (regionSearchQuery.trim() === '') {
-      setFilteredRegions(regions);
-    } else {
-      const filtered = regions.filter(region => 
-        region.toLowerCase().includes(regionSearchQuery.toLowerCase())
-      );
-      setFilteredRegions(filtered);
-    }
-  }, [regionSearchQuery]);
-  
-  // Filter directions based on search query
-  useEffect(() => {
-    if (directionSearchQuery.trim() === '') {
-      setFilteredDirections(directions);
-    } else {
-      const filtered = directions.filter(direction => 
-        direction.toLowerCase().includes(directionSearchQuery.toLowerCase())
-      );
-      setFilteredDirections(filtered);
-    }
-  }, [directionSearchQuery]);
-  
-  // Filter accreditations based on search query
-  useEffect(() => {
-    if (accreditationSearchQuery.trim() === '') {
-      setFilteredAccreditations(accreditations);
-    } else {
-      const filtered = accreditations.filter(accreditation => 
-        accreditation.toLowerCase().includes(accreditationSearchQuery.toLowerCase())
-      );
-      setFilteredAccreditations(filtered);
-    }
-  }, [accreditationSearchQuery]);
-
-  // Handle region selection
-  const handleRegionSelect = (region: string) => {
-    setSelectedRegion(region);
-    setRegionSearchQuery(region);
-    setOpenRegion(false);
-  };
-  
-  // Handle direction selection
-  const handleDirectionSelect = (direction: string) => {
-    setSelectedDirection(direction);
-    setDirectionSearchQuery(direction);
-    setOpenDirection(false);
-  };
-  
-  // Handle accreditation selection
-  const handleAccreditationSelect = (accreditation: string) => {
-    setSelectedAccreditation(accreditation);
-    setAccreditationSearchQuery(accreditation);
-    setOpenAccreditation(false);
-  };
 
   // Filter universities based on search query and filters
   const filteredUniversities = universities.filter((university) => {
@@ -202,155 +132,38 @@ const SearchPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
             <label className="block text-sm mb-1">Регион</label>
-            <Popover open={openRegion} onOpenChange={setOpenRegion}>
-              <PopoverTrigger asChild>
-                <div 
-                  className="relative flex items-center w-full cursor-pointer"
-                  onClick={() => !openRegion && setOpenRegion(true)}
-                >
-                  <Input
-                    type="text"
-                    placeholder="Выберите или начните вводить..."
-                    value={regionSearchQuery}
-                    onChange={(e) => {
-                      setRegionSearchQuery(e.target.value);
-                      !openRegion && setOpenRegion(true);
-                    }}
-                    className="w-full pr-8"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') {
-                        setOpenRegion(false);
-                      }
-                    }}
-                  />
-                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
-                <Command>
-                  <CommandList>
-                    <CommandEmpty>Регионов не найдено</CommandEmpty>
-                    <CommandGroup>
-                      {filteredRegions.map((region) => (
-                        <CommandItem
-                          key={region}
-                          value={region}
-                          onSelect={() => handleRegionSelect(region)}
-                          className="flex items-center justify-between"
-                        >
-                          <div>{region}</div>
-                          {selectedRegion === region && (
-                            <Check className="h-4 w-4 ml-2" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <SearchableDropdown
+              options={regionOptions}
+              value={selectedRegion}
+              onValueChange={setSelectedRegion}
+              searchQuery={regionSearchQuery}
+              onSearchQueryChange={setRegionSearchQuery}
+              emptyMessage="Регионов не найдено"
+            />
           </div>
           
           <div>
             <label className="block text-sm mb-1">Направление</label>
-            <Popover open={openDirection} onOpenChange={setOpenDirection}>
-              <PopoverTrigger asChild>
-                <div 
-                  className="relative flex items-center w-full cursor-pointer"
-                  onClick={() => !openDirection && setOpenDirection(true)}
-                >
-                  <Input
-                    type="text"
-                    placeholder="Выберите или начните вводить..."
-                    value={directionSearchQuery}
-                    onChange={(e) => {
-                      setDirectionSearchQuery(e.target.value);
-                      !openDirection && setOpenDirection(true);
-                    }}
-                    className="w-full pr-8"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') {
-                        setOpenDirection(false);
-                      }
-                    }}
-                  />
-                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
-                <Command>
-                  <CommandList>
-                    <CommandEmpty>Направлений не найдено</CommandEmpty>
-                    <CommandGroup>
-                      {filteredDirections.map((direction) => (
-                        <CommandItem
-                          key={direction}
-                          value={direction}
-                          onSelect={() => handleDirectionSelect(direction)}
-                          className="flex items-center justify-between"
-                        >
-                          <div>{direction}</div>
-                          {selectedDirection === direction && (
-                            <Check className="h-4 w-4 ml-2" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <SearchableDropdown
+              options={directionOptions}
+              value={selectedDirection}
+              onValueChange={setSelectedDirection}
+              searchQuery={directionSearchQuery}
+              onSearchQueryChange={setDirectionSearchQuery}
+              emptyMessage="Направлений не найдено"
+            />
           </div>
           
           <div>
             <label className="block text-sm mb-1">Аккредитация</label>
-            <Popover open={openAccreditation} onOpenChange={setOpenAccreditation}>
-              <PopoverTrigger asChild>
-                <div 
-                  className="relative flex items-center w-full cursor-pointer"
-                  onClick={() => !openAccreditation && setOpenAccreditation(true)}
-                >
-                  <Input
-                    type="text"
-                    placeholder="Выберите или начните вводить..."
-                    value={accreditationSearchQuery}
-                    onChange={(e) => {
-                      setAccreditationSearchQuery(e.target.value);
-                      !openAccreditation && setOpenAccreditation(true);
-                    }}
-                    className="w-full pr-8"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') {
-                        setOpenAccreditation(false);
-                      }
-                    }}
-                  />
-                  <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="w-full p-0" align="start" sideOffset={5}>
-                <Command>
-                  <CommandList>
-                    <CommandEmpty>Вариантов не найдено</CommandEmpty>
-                    <CommandGroup>
-                      {filteredAccreditations.map((accreditation) => (
-                        <CommandItem
-                          key={accreditation}
-                          value={accreditation}
-                          onSelect={() => handleAccreditationSelect(accreditation)}
-                          className="flex items-center justify-between"
-                        >
-                          <div>{accreditation}</div>
-                          {selectedAccreditation === accreditation && (
-                            <Check className="h-4 w-4 ml-2" />
-                          )}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <SearchableDropdown
+              options={accreditationOptions}
+              value={selectedAccreditation}
+              onValueChange={setSelectedAccreditation}
+              searchQuery={accreditationSearchQuery}
+              onSearchQueryChange={setAccreditationSearchQuery}
+              emptyMessage="Вариантов не найдено"
+            />
           </div>
         </div>
         
