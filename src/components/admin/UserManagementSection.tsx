@@ -35,10 +35,7 @@ const UserManagementSection: React.FC = () => {
 
   return (
     <div className="glass-card p-6 animate-fade-in">
-      <h2 className="text-xl font-semibold mb-4">Управление ролями</h2>
-      <p className="text-university-textSecondary mb-6">
-        Управление ролями пользователей в системе
-      </p>
+      <h2 className="text-xl font-semibold mb-4">Управление ролями пользователя в системе</h2>
       
       <div className="flex justify-end mb-4">
         <div className="relative w-64">

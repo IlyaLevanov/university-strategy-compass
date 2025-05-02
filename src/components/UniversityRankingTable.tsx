@@ -14,6 +14,11 @@ const rankingData = [
   { id: 8, rank: 8, name: 'Казанский федеральный университет', score: 88.5 },
   { id: 9, rank: 9, name: 'Уральский федеральный университет', score: 87.6 },
   { id: 10, rank: 10, name: 'ИТМО', score: 86.3 },
+  { id: 11, rank: 11, name: 'Томский государственный университет', score: 85.7 },
+  { id: 12, rank: 12, name: 'Российский университет дружбы народов', score: 84.9 },
+  { id: 13, rank: 13, name: 'Дальневосточный федеральный университет', score: 83.6 },
+  { id: 14, rank: 14, name: 'Финансовый университет при Правительстве РФ', score: 82.8 },
+  { id: 15, rank: 15, name: 'Национальный исследовательский ядерный университет «МИФИ»', score: 82.0 },
 ];
 
 const UniversityRankingTable = () => {
@@ -36,27 +41,29 @@ const UniversityRankingTable = () => {
       </div>
       
       <div className="overflow-x-auto">
-        <table className="min-w-full">
-          <thead>
-            <tr className="border-b border-border/50">
-              <th className="py-3 px-4 text-left">Место</th>
-              <th className="py-3 px-4 text-left">Название</th>
-              <th className="py-3 px-4 text-right">Баллы</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rankingData.map((university) => (
-              <tr 
-                key={university.id} 
-                className="border-b border-border/50 hover:bg-muted/50 transition-colors"
-              >
-                <td className="py-3 px-4">{university.rank}</td>
-                <td className="py-3 px-4">{university.name}</td>
-                <td className="py-3 px-4 text-right font-semibold">{university.score}</td>
+        <div className="max-h-[500px] overflow-y-auto">
+          <table className="min-w-full">
+            <thead className="sticky top-0 bg-background z-10">
+              <tr className="border-b border-border/50">
+                <th className="py-3 px-4 text-left">Место</th>
+                <th className="py-3 px-4 text-left">Название</th>
+                <th className="py-3 px-4 text-right">Баллы</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {rankingData.map((university) => (
+                <tr 
+                  key={university.id} 
+                  className="border-b border-border/50 hover:bg-muted/50 transition-colors"
+                >
+                  <td className="py-3 px-4">{university.rank}</td>
+                  <td className="py-3 px-4">{university.name}</td>
+                  <td className="py-3 px-4 text-right font-semibold">{university.score}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

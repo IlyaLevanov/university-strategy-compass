@@ -87,7 +87,7 @@ const DataImportSection: React.FC = () => {
       <div className="flex justify-end">
         <button onClick={handleDataImport} className="btn-primary flex items-center gap-2">
           <Upload size={16} />
-          <span>Импортировать</span>
+          <span>Загрузить</span>
         </button>
       </div>
     </div>

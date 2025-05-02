@@ -51,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, userRole }) =>
                 `nav-link ${isActive ? 'active' : ''}`
               }>
                 <School size={20} />
-                {isOpen && <span>Вуз</span>}
+                {isOpen && <span>Карточка университета</span>}
               </NavLink>
             </li>
             {userRole === 'manager' && (
@@ -60,7 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar, userRole }) =>
                   `nav-link ${isActive ? 'active' : ''}`
                 }>
                   <UserCog size={20} />
-                  {isOpen && <span>Админ</span>}
+                  {isOpen && <span>Админ панель</span>}
                 </NavLink>
               </li>
             )}
