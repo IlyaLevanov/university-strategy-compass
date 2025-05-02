@@ -95,7 +95,7 @@ const PdfUploadSection: React.FC = () => {
                 aria-expanded={open}
                 className="w-full flex items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
-                {universitySearchQuery || "Поиск или выбор университета"}
+                {universitySearchQuery || "Выбор университета"}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
