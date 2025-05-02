@@ -89,13 +89,17 @@ const PdfUploadSection: React.FC = () => {
           <label className="block text-sm mb-2">Университет</label>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-              <Input
-                placeholder="Выбор университета"
-                value={universitySearchQuery}
-                onChange={(e) => setUniversitySearchQuery(e.target.value)}
-                onClick={() => setOpen(true)}
-                className="w-full cursor-pointer"
-              />
+              <div className="relative w-full">
+                <Input
+                  type="text"
+                  placeholder="Выбор университета"
+                  value={universitySearchQuery}
+                  onChange={(e) => setUniversitySearchQuery(e.target.value)}
+                  onClick={() => setOpen(true)}
+                  onFocus={() => setOpen(true)}
+                  className="w-full"
+                />
+              </div>
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
               <Command>
