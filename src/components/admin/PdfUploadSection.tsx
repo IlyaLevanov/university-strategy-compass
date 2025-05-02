@@ -7,7 +7,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
@@ -100,15 +99,17 @@ const PdfUploadSection: React.FC = () => {
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
               <Command>
-                <CommandInput 
-                  placeholder="Поиск университета..." 
-                  value={universitySearchQuery}
-                  onValueChange={setUniversitySearchQuery}
-                  autoFocus={true}
-                />
                 <CommandList>
                   <CommandEmpty>Университетов не найдено</CommandEmpty>
                   <CommandGroup>
+                    <div className="px-3 py-2">
+                      <Input 
+                        placeholder="Поиск университета..." 
+                        value={universitySearchQuery}
+                        onChange={(e) => setUniversitySearchQuery(e.target.value)}
+                        className="border-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                      />
+                    </div>
                     {filteredUniversities.map((university) => (
                       <CommandItem
                         key={university.id}
