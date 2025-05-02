@@ -1,7 +1,22 @@
 
-import React, { useState } from 'react';
-import { Upload, Check, X, FileSpreadsheet } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Upload, Check, Search, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from '@/lib/utils';
 
 // Example users data
 const usersData = [
@@ -35,9 +50,12 @@ const AdminPage: React.FC = () => {
   const [selectedUniversity, setSelectedUniversity] = useState('');
   const [documentTags, setDocumentTags] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [isUniversityOpen, setIsUniversityOpen] = useState(false);
   
   // User Management State
   const [users, setUsers] = useState(usersData);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(users);
   
   // Handle file selection for data import
   const handleFileSelect = (type: FileType) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +66,18 @@ const AdminPage: React.FC = () => {
       });
     }
   };
+  
+  // Filter users based on search query
+  useEffect(() => {
+    if (userSearchQuery.trim() === '') {
+      setFilteredUsers(users);
+    } else {
+      const filtered = users.filter(user => 
+        user.email.toLowerCase().includes(userSearchQuery.toLowerCase())
+      );
+      setFilteredUsers(filtered);
+    }
+  }, [userSearchQuery, users]);
   
   // Handle data import
   const handleDataImport = () => {
@@ -174,18 +204,41 @@ const AdminPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm mb-2">Университет</label>
-            <select
-              value={selectedUniversity}
-              onChange={(e) => setSelectedUniversity(e.target.value)}
-              className="w-full bg-muted border border-border rounded-md px-3 py-2"
-            >
-              <option value="">Выберите университет</option>
-              {universitiesData.map((university) => (
-                <option key={university.id} value={university.id}>
-                  {university.name}
-                </option>
-              ))}
-            </select>
+            <Popover open={isUniversityOpen} onOpenChange={setIsUniversityOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className="w-full flex items-center justify-between bg-muted border border-border rounded-md px-3 py-2 text-sm focus-visible:outline-none"
+                >
+                  {selectedUniversity ? universitiesData.find(u => u.id.toString() === selectedUniversity)?.name : "Выберите университет"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[300px] p-0" align="start">
+                <Command>
+                  <CommandInput placeholder="Поиск университета..." />
+                  <CommandEmpty>Ничего не найдено.</CommandEmpty>
+                  <CommandGroup className="max-h-64 overflow-y-auto">
+                    {universitiesData.map((university) => (
+                      <CommandItem
+                        key={university.id}
+                        value={university.name}
+                        onSelect={() => {
+                          setSelectedUniversity(university.id.toString());
+                          setIsUniversityOpen(false);
+                        }}
+                      >
+                        {university.name}
+                        <Check
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            selectedUniversity === university.id.toString() ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div>
@@ -244,6 +297,19 @@ const AdminPage: React.FC = () => {
           Управление ролями пользователей в системе
         </p>
         
+        <div className="flex justify-end mb-4">
+          <div className="relative w-64">
+            <input
+              type="text"
+              value={userSearchQuery}
+              onChange={(e) => setUserSearchQuery(e.target.value)}
+              placeholder="Поиск по email..."
+              className="w-full bg-muted border border-border rounded-md pl-9 pr-3 py-2 text-sm focus:outline-none"
+            />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-university-textSecondary" />
+          </div>
+        </div>
+        
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
@@ -254,7 +320,7 @@ const AdminPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr 
                   key={user.id} 
                   className="border-b border-border/50 hover:bg-muted/50 transition-colors"
