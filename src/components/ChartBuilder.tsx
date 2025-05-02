@@ -67,7 +67,7 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
   
   // Metric state
   const [metricSearchQuery, setMetricSearchQuery] = useState('');
-  const [selectedMetric, setSelectedMetric] = useState('students');
+  const [selectedMetric, setSelectedMetric] = useState('');
   const [openMetric, setOpenMetric] = useState(false);
   const [filteredMetrics, setFilteredMetrics] = useState(metricOptions);
   
@@ -174,13 +174,24 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <label className="block text-sm mb-1">Университет A</label>
             <Popover open={openUniversityA} onOpenChange={setOpenUniversityA}>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center w-full">
+                <div 
+                  className="relative flex items-center w-full cursor-pointer"
+                  onClick={() => !openUniversityA && setOpenUniversityA(true)}
+                >
                   <Input
                     type="text"
                     placeholder="Выберите или начните вводить..."
                     value={universityASearchQuery}
-                    onChange={(e) => setUniversityASearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setUniversityASearchQuery(e.target.value);
+                      !openUniversityA && setOpenUniversityA(true);
+                    }}
                     className="w-full pr-8"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setOpenUniversityA(false);
+                      }
+                    }}
                   />
                   <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                 </div>
@@ -214,13 +225,24 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <label className="block text-sm mb-1">Университет B</label>
             <Popover open={openUniversityB} onOpenChange={setOpenUniversityB}>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center w-full">
+                <div 
+                  className="relative flex items-center w-full cursor-pointer"
+                  onClick={() => !openUniversityB && setOpenUniversityB(true)}
+                >
                   <Input
                     type="text"
                     placeholder="Выберите или начните вводить..."
                     value={universityBSearchQuery}
-                    onChange={(e) => setUniversityBSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setUniversityBSearchQuery(e.target.value);
+                      !openUniversityB && setOpenUniversityB(true);
+                    }}
                     className="w-full pr-8"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setOpenUniversityB(false);
+                      }
+                    }}
                   />
                   <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                 </div>
@@ -256,13 +278,24 @@ const ChartBuilder: React.FC<ChartBuilderProps> = ({ title }) => {
             <label className="block text-sm mb-1">Метрика</label>
             <Popover open={openMetric} onOpenChange={setOpenMetric}>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center w-full">
+                <div 
+                  className="relative flex items-center w-full cursor-pointer"
+                  onClick={() => !openMetric && setOpenMetric(true)}
+                >
                   <Input
                     type="text"
                     placeholder="Выберите или начните вводить..."
                     value={metricSearchQuery}
-                    onChange={(e) => setMetricSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setMetricSearchQuery(e.target.value);
+                      !openMetric && setOpenMetric(true);
+                    }}
                     className="w-full pr-8"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setOpenMetric(false);
+                      }
+                    }}
                   />
                   <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                 </div>

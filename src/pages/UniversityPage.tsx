@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Check, ChevronDown } from 'lucide-react';
@@ -62,14 +61,14 @@ const UniversityPage: React.FC = () => {
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
   
   // Metric X state
-  const [metricXSearchQuery, setMetricXSearchQuery] = useState('Количество студентов');
-  const [metricX, setMetricX] = useState('students');
+  const [metricXSearchQuery, setMetricXSearchQuery] = useState('');
+  const [metricX, setMetricX] = useState('');
   const [openMetricX, setOpenMetricX] = useState(false);
   const [filteredMetricsX, setFilteredMetricsX] = useState(metricOptions);
   
   // Metric Y state
-  const [metricYSearchQuery, setMetricYSearchQuery] = useState('Научные публикации');
-  const [metricY, setMetricY] = useState('publications');
+  const [metricYSearchQuery, setMetricYSearchQuery] = useState('');
+  const [metricY, setMetricY] = useState('');
   const [openMetricY, setOpenMetricY] = useState(false);
   const [filteredMetricsY, setFilteredMetricsY] = useState(metricOptions);
   
@@ -206,13 +205,24 @@ const UniversityPage: React.FC = () => {
               <label className="block text-sm mb-1">Метрика X</label>
               <Popover open={openMetricX} onOpenChange={setOpenMetricX}>
                 <PopoverTrigger asChild>
-                  <div className="relative flex items-center w-full">
+                  <div 
+                    className="relative flex items-center w-full cursor-pointer"
+                    onClick={() => !openMetricX && setOpenMetricX(true)}
+                  >
                     <Input
                       type="text"
                       placeholder="Выберите или начните вводить..."
                       value={metricXSearchQuery}
-                      onChange={(e) => setMetricXSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setMetricXSearchQuery(e.target.value);
+                        !openMetricX && setOpenMetricX(true);
+                      }}
                       className="w-full pr-8"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                          setOpenMetricX(false);
+                        }
+                      }}
                     />
                     <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                   </div>
@@ -248,13 +258,24 @@ const UniversityPage: React.FC = () => {
               <label className="block text-sm mb-1">Метрика Y</label>
               <Popover open={openMetricY} onOpenChange={setOpenMetricY}>
                 <PopoverTrigger asChild>
-                  <div className="relative flex items-center w-full">
+                  <div 
+                    className="relative flex items-center w-full cursor-pointer"
+                    onClick={() => !openMetricY && setOpenMetricY(true)}
+                  >
                     <Input
                       type="text"
                       placeholder="Выберите или начните вводить..."
                       value={metricYSearchQuery}
-                      onChange={(e) => setMetricYSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setMetricYSearchQuery(e.target.value);
+                        !openMetricY && setOpenMetricY(true);
+                      }}
                       className="w-full pr-8"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                          setOpenMetricY(false);
+                        }
+                      }}
                     />
                     <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                   </div>

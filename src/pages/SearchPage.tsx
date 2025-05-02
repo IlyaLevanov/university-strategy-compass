@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, Check, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -92,20 +91,20 @@ const SearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Region state
-  const [regionSearchQuery, setRegionSearchQuery] = useState('Все регионы');
-  const [selectedRegion, setSelectedRegion] = useState('Все регионы');
+  const [regionSearchQuery, setRegionSearchQuery] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState('');
   const [openRegion, setOpenRegion] = useState(false);
   const [filteredRegions, setFilteredRegions] = useState(regions);
   
   // Direction state
-  const [directionSearchQuery, setDirectionSearchQuery] = useState('Все направления');
-  const [selectedDirection, setSelectedDirection] = useState('Все направления');
+  const [directionSearchQuery, setDirectionSearchQuery] = useState('');
+  const [selectedDirection, setSelectedDirection] = useState('');
   const [openDirection, setOpenDirection] = useState(false);
   const [filteredDirections, setFilteredDirections] = useState(directions);
   
   // Accreditation state
-  const [accreditationSearchQuery, setAccreditationSearchQuery] = useState('Все');
-  const [selectedAccreditation, setSelectedAccreditation] = useState('Все');
+  const [accreditationSearchQuery, setAccreditationSearchQuery] = useState('');
+  const [selectedAccreditation, setSelectedAccreditation] = useState('');
   const [openAccreditation, setOpenAccreditation] = useState(false);
   const [filteredAccreditations, setFilteredAccreditations] = useState(accreditations);
   
@@ -171,9 +170,9 @@ const SearchPage: React.FC = () => {
   // Filter universities based on search query and filters
   const filteredUniversities = universities.filter((university) => {
     const matchesSearch = university.name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesRegion = selectedRegion === 'Все регионы' || university.region === selectedRegion;
-    const matchesDirection = selectedDirection === 'Все направления' || university.direction === selectedDirection;
-    const matchesAccreditation = selectedAccreditation === 'Все' || university.accreditation === selectedAccreditation;
+    const matchesRegion = selectedRegion === '' || selectedRegion === 'Все регионы' || university.region === selectedRegion;
+    const matchesDirection = selectedDirection === '' || selectedDirection === 'Все направления' || university.direction === selectedDirection;
+    const matchesAccreditation = selectedAccreditation === '' || selectedAccreditation === 'Все' || university.accreditation === selectedAccreditation;
     
     return matchesSearch && matchesRegion && matchesDirection && matchesAccreditation;
   });
@@ -205,13 +204,24 @@ const SearchPage: React.FC = () => {
             <label className="block text-sm mb-1">Регион</label>
             <Popover open={openRegion} onOpenChange={setOpenRegion}>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center w-full">
+                <div 
+                  className="relative flex items-center w-full cursor-pointer"
+                  onClick={() => !openRegion && setOpenRegion(true)}
+                >
                   <Input
                     type="text"
                     placeholder="Выберите или начните вводить..."
                     value={regionSearchQuery}
-                    onChange={(e) => setRegionSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setRegionSearchQuery(e.target.value);
+                      !openRegion && setOpenRegion(true);
+                    }}
                     className="w-full pr-8"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setOpenRegion(false);
+                      }
+                    }}
                   />
                   <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                 </div>
@@ -245,13 +255,24 @@ const SearchPage: React.FC = () => {
             <label className="block text-sm mb-1">Направление</label>
             <Popover open={openDirection} onOpenChange={setOpenDirection}>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center w-full">
+                <div 
+                  className="relative flex items-center w-full cursor-pointer"
+                  onClick={() => !openDirection && setOpenDirection(true)}
+                >
                   <Input
                     type="text"
                     placeholder="Выберите или начните вводить..."
                     value={directionSearchQuery}
-                    onChange={(e) => setDirectionSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setDirectionSearchQuery(e.target.value);
+                      !openDirection && setOpenDirection(true);
+                    }}
                     className="w-full pr-8"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setOpenDirection(false);
+                      }
+                    }}
                   />
                   <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                 </div>
@@ -285,13 +306,24 @@ const SearchPage: React.FC = () => {
             <label className="block text-sm mb-1">Аккредитация</label>
             <Popover open={openAccreditation} onOpenChange={setOpenAccreditation}>
               <PopoverTrigger asChild>
-                <div className="relative flex items-center w-full">
+                <div 
+                  className="relative flex items-center w-full cursor-pointer"
+                  onClick={() => !openAccreditation && setOpenAccreditation(true)}
+                >
                   <Input
                     type="text"
                     placeholder="Выберите или начните вводить..."
                     value={accreditationSearchQuery}
-                    onChange={(e) => setAccreditationSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setAccreditationSearchQuery(e.target.value);
+                      !openAccreditation && setOpenAccreditation(true);
+                    }}
                     className="w-full pr-8"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') {
+                        setOpenAccreditation(false);
+                      }
+                    }}
                   />
                   <ChevronDown className="absolute right-3 h-4 w-4 opacity-50" />
                 </div>
