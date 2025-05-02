@@ -55,8 +55,6 @@ const AdminPage: React.FC = () => {
   
   // Filter universities based on search query
   useEffect(() => {
-    if (!universitiesData) return;
-    
     if (universitySearchQuery.trim() === '') {
       setFilteredUniversities(universitiesData);
     } else {
@@ -79,8 +77,6 @@ const AdminPage: React.FC = () => {
   
   // Filter users based on search query
   useEffect(() => {
-    if (!users) return;
-    
     if (userSearchQuery.trim() === '') {
       setFilteredUsers(users);
     } else {
@@ -232,8 +228,8 @@ const AdminPage: React.FC = () => {
                     onValueChange={setUniversitySearchQuery}
                   />
                   <CommandEmpty>Ничего не найдено.</CommandEmpty>
-                  <CommandGroup className="max-h-64 overflow-y-auto">
-                    {filteredUniversities && filteredUniversities.map((university) => (
+                  <CommandGroup>
+                    {filteredUniversities.map((university) => (
                       <CommandItem
                         key={university.id}
                         value={university.name}
@@ -336,7 +332,7 @@ const AdminPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers && filteredUsers.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr 
                   key={user.id} 
                   className="border-b border-border/50 hover:bg-muted/50 transition-colors"
