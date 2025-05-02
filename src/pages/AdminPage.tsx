@@ -3,14 +3,19 @@ import React, { useState, useEffect } from 'react';
 import { Upload, Check, Search, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem
-} from "@/components/ui/command";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from '@/components/ui/input';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from '@/lib/utils';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // Example users data
 const usersData = [
@@ -46,7 +51,6 @@ const AdminPage: React.FC = () => {
   const [filteredUniversities, setFilteredUniversities] = useState(universitiesData);
   const [documentTags, setDocumentTags] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [isUniversityOpen, setIsUniversityOpen] = useState(false);
   
   // User Management State
   const [users, setUsers] = useState(usersData);
@@ -107,6 +111,29 @@ const AdminPage: React.FC = () => {
     });
   };
   
+  // Handle university selection directly from input
+  const handleUniversityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUniversitySearchQuery(e.target.value);
+    
+    // If exact match, select it directly
+    const matchedUniversity = universitiesData.find(
+      uni => uni.name.toLowerCase() === e.target.value.toLowerCase()
+    );
+    
+    if (matchedUniversity) {
+      setSelectedUniversity(matchedUniversity.id.toString());
+    }
+  };
+  
+  // Handle university selection from dropdown
+  const handleUniversitySelect = (universityId: string) => {
+    setSelectedUniversity(universityId);
+    const selected = universitiesData.find(uni => uni.id.toString() === universityId);
+    if (selected) {
+      setUniversitySearchQuery(selected.name);
+    }
+  };
+  
   // Handle PDF file selection
   const handlePdfSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -118,8 +145,8 @@ const AdminPage: React.FC = () => {
   const handlePdfUpload = () => {
     // In a real application, this would upload the PDF to the server
     
-    if (!selectedUniversity) {
-      toast.error('Выберите университет');
+    if (!selectedUniversity && !universitySearchQuery) {
+      toast.error('Выберите или введите название университета');
       return;
     }
     
@@ -132,6 +159,7 @@ const AdminPage: React.FC = () => {
     
     // Reset form after upload
     setSelectedUniversity('');
+    setUniversitySearchQuery('');
     setDocumentTags('');
     setPdfFile(null);
   };
@@ -212,45 +240,45 @@ const AdminPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <label className="block text-sm mb-2">Университет</label>
-            <Popover open={isUniversityOpen} onOpenChange={setIsUniversityOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  className="w-full flex items-center justify-between bg-muted border border-border rounded-md px-3 py-2 text-sm focus-visible:outline-none"
-                >
-                  {selectedUniversity ? universitiesData.find(u => u.id.toString() === selectedUniversity)?.name : "Выберите университет"}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0" align="start">
-                <Command>
-                  <CommandInput 
-                    placeholder="Поиск университета..." 
-                    value={universitySearchQuery}
-                    onValueChange={setUniversitySearchQuery}
-                  />
-                  <CommandEmpty>Ничего не найдено.</CommandEmpty>
-                  <CommandGroup>
-                    {filteredUniversities.map((university) => (
-                      <CommandItem
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Поиск или выбор университета"
+                value={universitySearchQuery}
+                onChange={handleUniversityInputChange}
+                className="w-full pr-10"
+              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="absolute right-0 top-0 h-full px-3 flex items-center"
+                    type="button"
+                  >
+                    <Search size={16} className="text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-[300px] max-h-[300px] overflow-y-auto">
+                  {filteredUniversities.length > 0 ? (
+                    filteredUniversities.map((university) => (
+                      <DropdownMenuItem 
                         key={university.id}
-                        value={university.name}
-                        onSelect={() => {
-                          setSelectedUniversity(university.id.toString());
-                          setIsUniversityOpen(false);
-                        }}
+                        onClick={() => handleUniversitySelect(university.id.toString())}
+                        className="flex items-center justify-between"
                       >
                         {university.name}
-                        <Check
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            selectedUniversity === university.id.toString() ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </Command>
-              </PopoverContent>
-            </Popover>
+                        {selectedUniversity === university.id.toString() && (
+                          <Check className="h-4 w-4 ml-2" />
+                        )}
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <div className="px-2 py-4 text-center text-sm text-muted-foreground">
+                      Ничего не найдено
+                    </div>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
           
           <div>
