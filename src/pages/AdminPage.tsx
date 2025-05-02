@@ -3,14 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Upload, Check, Search, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
@@ -48,6 +42,8 @@ const AdminPage: React.FC = () => {
   
   // PDF Upload State
   const [selectedUniversity, setSelectedUniversity] = useState('');
+  const [universitySearchQuery, setUniversitySearchQuery] = useState('');
+  const [filteredUniversities, setFilteredUniversities] = useState(universitiesData);
   const [documentTags, setDocumentTags] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [isUniversityOpen, setIsUniversityOpen] = useState(false);
@@ -56,6 +52,20 @@ const AdminPage: React.FC = () => {
   const [users, setUsers] = useState(usersData);
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(users);
+  
+  // Filter universities based on search query
+  useEffect(() => {
+    if (!universitiesData) return;
+    
+    if (universitySearchQuery.trim() === '') {
+      setFilteredUniversities(universitiesData);
+    } else {
+      const filtered = universitiesData.filter(university => 
+        university.name.toLowerCase().includes(universitySearchQuery.toLowerCase())
+      );
+      setFilteredUniversities(filtered);
+    }
+  }, [universitySearchQuery]);
   
   // Handle file selection for data import
   const handleFileSelect = (type: FileType) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +79,8 @@ const AdminPage: React.FC = () => {
   
   // Filter users based on search query
   useEffect(() => {
+    if (!users) return;
+    
     if (userSearchQuery.trim() === '') {
       setFilteredUsers(users);
     } else {
@@ -214,10 +226,14 @@ const AdminPage: React.FC = () => {
               </PopoverTrigger>
               <PopoverContent className="w-[300px] p-0" align="start">
                 <Command>
-                  <CommandInput placeholder="Поиск университета..." />
+                  <CommandInput 
+                    placeholder="Поиск университета..." 
+                    value={universitySearchQuery}
+                    onValueChange={setUniversitySearchQuery}
+                  />
                   <CommandEmpty>Ничего не найдено.</CommandEmpty>
                   <CommandGroup className="max-h-64 overflow-y-auto">
-                    {universitiesData.map((university) => (
+                    {filteredUniversities && filteredUniversities.map((university) => (
                       <CommandItem
                         key={university.id}
                         value={university.name}
@@ -320,7 +336,7 @@ const AdminPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
+              {filteredUsers && filteredUsers.map((user) => (
                 <tr 
                   key={user.id} 
                   className="border-b border-border/50 hover:bg-muted/50 transition-colors"
