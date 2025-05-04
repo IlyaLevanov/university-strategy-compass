@@ -105,6 +105,7 @@ const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
       <PopoverContent
         className="w-full p-0"
         align="start"
+        onOpenAutoFocus={(e) => e.preventDefault()}
         sideOffset={5}
       >
         <Command>
